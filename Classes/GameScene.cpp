@@ -3,9 +3,18 @@
 //
 
 #include "GameScene.h"
+#include "GameOverScene.h"
+#define TRANSITION_TIME 0.5
 #include "../cocos2d/cocos/deprecated/CCDeprecated.h"
 //#include "../cocos2d/cocos/physics/CCPhysicsBody.h"
 USING_NS_CC;
+
+enum class PhysicsCategory {
+    None = 0,
+    Boulder = (1 << 0),    // 1
+    Soldier = (1 << 1), // 2
+    All = PhysicsCategory::Boulder | PhysicsCategory::Soldier // 3
+};
 
 Scene* GameScene::createScene()
 {
@@ -52,10 +61,31 @@ bool GameScene::init()
     soldierSprite = Sprite::create("soldier.png");
     soldierSprite -> setPosition(visibleSize.width / 2 , visibleSize.height * 0.4);
     initializePhysics(soldierSprite);
+
+    soldierSprite->getPhysicsBody()->setCategoryBitmask((int)PhysicsCategory::Soldier);
+    soldierSprite->getPhysicsBody()->setCollisionBitmask((int)PhysicsCategory::None);
+    soldierSprite->getPhysicsBody()->setContactTestBitmask((int)PhysicsCategory::Boulder);
     addChild(soldierSprite, 2);
 
     initTouch();
     schedule(schedule_selector(GameScene::addBoulder), 5.0f);
+
+    auto contactListener = EventListenerPhysicsContact::create();
+    contactListener->onContactBegin = CC_CALLBACK_1(GameScene::onContactBegan, this);
+    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(contactListener, this);
+    return true;
+}
+
+bool GameScene::onContactBegan(PhysicsContact &contact) {
+    auto nodeA = contact.getShapeA()->getBody()->getNode();
+    auto nodeB = contact.getShapeB()->getBody()->getNode();
+
+    nodeA->removeFromParent();
+    nodeB->removeFromParent();
+
+    auto scene = GameOverScene::createScene();
+    Director::getInstance( )->replaceScene( TransitionFade::create( TRANSITION_TIME, scene ) );
+
     return true;
 }
 
@@ -81,6 +111,9 @@ void GameScene::addBoulder(float dt)
         boulder -> setPosition(CCRANDOM_0_1() * visibleSize.width , visibleSize.height);
         initializePhysics(boulder);
         boulder ->getPhysicsBody()->setVelocity(cocos2d::Vec2(10, ( (CCRANDOM_0_1() + 0.02f) * -150) ));
+        boulder->getPhysicsBody()->setCategoryBitmask((int)PhysicsCategory::Boulder);
+        boulder->getPhysicsBody()->setCollisionBitmask((int)PhysicsCategory::None);
+        boulder->getPhysicsBody()->setContactTestBitmask((int)PhysicsCategory::Soldier);
         this -> addChild(boulder, 1);
     }
 }

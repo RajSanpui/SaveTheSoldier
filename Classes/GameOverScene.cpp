@@ -1,28 +1,26 @@
 //
-// Created by rsanpui on 5/20/2020.
+// Created by rsanpui on 5/21/2020.
 //
 
-#include "MainMenu.h"
+#include "GameOverScene.h"
 #include "GameScene.h"
-
 #define TRANSITION_TIME 0.5
-#include "../cocos2d/cocos/deprecated/CCDeprecated.h"
-//#include "../cocos2d/cocos/physics/CCPhysicsBody.h"
+
 USING_NS_CC;
 
-Scene* MainMenu::createScene()
+Scene* GameOverScene::createScene()
 {
     auto scene = Scene::createWithPhysics();
     scene->getPhysicsWorld()->setGravity(Vect(0, 0));
 
-    auto layer = MainMenu::create();
+    auto layer = GameOverScene::create();
     scene->addChild(layer);
 
     return scene;
 }
 
 // on "init" you need to initialize your instance
-bool MainMenu::init() {
+bool GameOverScene::init() {
     if (!Layer::init()) {
         return false;
     }
@@ -34,7 +32,7 @@ bool MainMenu::init() {
     auto closeItem = MenuItemImage::create(
             "CloseNormal.png",
             "CloseSelected.png",
-            CC_CALLBACK_1(MainMenu::menuCloseCallback, this));
+            CC_CALLBACK_1(GameOverScene::menuCloseCallback, this));
 
     float x = origin.x + visibleSize.width - closeItem->getContentSize().width / 2;
     float y = origin.y + closeItem->getContentSize().height / 2;
@@ -46,13 +44,13 @@ bool MainMenu::init() {
     this->addChild(menu, 1);
 
     // Background Sprite
-    auto backgroundSprite = Sprite::create("background.png");
+    auto backgroundSprite = Sprite::create("gameOver.png");
     backgroundSprite->setPosition(origin.x + visibleSize.width / 2,
                                   origin.y + visibleSize.height / 2);
     this->addChild(backgroundSprite, 0);
 
     // Play menu
-    auto playItem = MenuItemImage::create( "Play.png", "CloseNormal.png", CC_CALLBACK_1( MainMenu::GoToGameScene, this ) );
+    auto playItem = MenuItemImage::create( "Play.png", "CloseNormal.png", CC_CALLBACK_1( GameOverScene::GoToGameScene, this ) );
     playItem->setPosition( Vec2( visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y ) );
 
     auto menuPlay = Menu::create( playItem, NULL );
@@ -63,17 +61,17 @@ bool MainMenu::init() {
     return true;
 }
 
-void MainMenu::menuCloseCallback(CCObject* pSender)
+void GameOverScene::GoToGameScene( cocos2d::Ref *sender )
+{
+    auto scene = GameScene::createScene();
+    Director::getInstance( )->replaceScene( TransitionFade::create( TRANSITION_TIME, scene ) );
+}
+
+void GameOverScene::menuCloseCallback(CCObject* pSender)
 {
     CCDirector::sharedDirector()->end();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);
 #endif
-}
-
-void MainMenu::GoToGameScene( cocos2d::Ref *sender )
-{
-    auto scene = GameScene::createScene();
-    Director::getInstance( )->replaceScene( TransitionFade::create( TRANSITION_TIME, scene ) );
 }

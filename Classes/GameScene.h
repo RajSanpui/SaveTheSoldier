@@ -20,6 +20,7 @@ private:
     cocos2d::Sprite* soldierSprite;
     void addBoulder(float dt);
     void initializePhysics(cocos2d::Sprite* sprite);
+    bool onContactBegan(cocos2d::PhysicsContact &contact);
     void initTouch();
     void moveSoldier(cocos2d::Touch* toque, cocos2d::Event* event);
 };
