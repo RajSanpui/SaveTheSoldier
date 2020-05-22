@@ -12,6 +12,7 @@ class GameOverScene : public cocos2d::Layer {
 public:
     static cocos2d::Scene* createScene();
     virtual bool init();
+    static int highestScore;
     void menuCloseCallback(cocos2d::CCObject* pSender);
     CREATE_FUNC(GameOverScene);
     void GoToGameScene( cocos2d::Ref *sender );

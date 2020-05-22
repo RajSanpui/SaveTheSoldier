@@ -9,7 +9,7 @@
 //#include "../cocos2d/cocos/physics/CCPhysicsBody.h"
 USING_NS_CC;
 
-int GameScene::SCORE = 0;
+int GameScene::SCORE = 0; // Initialize static variable
 enum class PhysicsCategory {
     None = 0,
     Boulder = (1 << 0),    // 1
