@@ -13,6 +13,8 @@ public:
 
     static cocos2d::Scene* createScene();
     virtual bool init();
+    static int SCORE;
+    cocos2d::Label* scoreLabel;
 
     void menuCloseCallback(cocos2d::CCObject* pSender);
     CREATE_FUNC(GameScene);

@@ -9,6 +9,7 @@
 //#include "../cocos2d/cocos/physics/CCPhysicsBody.h"
 USING_NS_CC;
 
+int GameScene::SCORE = 0;
 enum class PhysicsCategory {
     None = 0,
     Boulder = (1 << 0),    // 1
@@ -58,6 +59,13 @@ bool GameScene::init()
     backgroundSprite -> setPosition(origin.x + visibleSize.width / 2 , origin.y + visibleSize.height/2);
     this->addChild(backgroundSprite, 1);
 
+    char text[256];
+    sprintf(text,"SCORE: %d", SCORE);
+    scoreLabel = Label::createWithTTF(text, "fonts/Marker Felt.ttf", 24);
+    scoreLabel->setPosition(Vec2(origin.x + visibleSize.width/2,
+                                 origin.y + visibleSize.height - scoreLabel->getContentSize().height));
+    this->addChild(scoreLabel, 2);
+
     soldierSprite = Sprite::create("soldier.png");
     soldierSprite -> setPosition(visibleSize.width / 2 , visibleSize.height * 0.4);
     initializePhysics(soldierSprite);
@@ -73,6 +81,8 @@ bool GameScene::init()
     auto contactListener = EventListenerPhysicsContact::create();
     contactListener->onContactBegin = CC_CALLBACK_1(GameScene::onContactBegan, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(contactListener, this);
+
+
     return true;
 }
 
@@ -115,7 +125,11 @@ void GameScene::addBoulder(float dt)
         boulder->getPhysicsBody()->setCollisionBitmask((int)PhysicsCategory::None);
         boulder->getPhysicsBody()->setContactTestBitmask((int)PhysicsCategory::Soldier);
         this -> addChild(boulder, 1);
+
     }
+    SCORE++;
+    scoreLabel->setString("SCORE: " + std::to_string(SCORE));
+
 }
 
 void GameScene::moveSoldier(Touch* touch, Event* evento)
