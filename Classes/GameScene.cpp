@@ -59,6 +59,8 @@ bool GameScene::init()
     backgroundSprite -> setPosition(origin.x + visibleSize.width / 2 , origin.y + visibleSize.height/2);
     this->addChild(backgroundSprite, 1);
 
+    // Scoring section initialization
+    SCORE = 0; // Re-initialize to zero.
     char text[256];
     sprintf(text,"SCORE: %d", SCORE);
     scoreLabel = Label::createWithTTF(text, "fonts/Marker Felt.ttf", 24);
@@ -66,6 +68,7 @@ bool GameScene::init()
                                  origin.y + visibleSize.height - scoreLabel->getContentSize().height));
     this->addChild(scoreLabel, 2);
 
+    // Adding the soldier
     soldierSprite = Sprite::create("soldier.png");
     soldierSprite -> setPosition(visibleSize.width / 2 , visibleSize.height * 0.4);
     initializePhysics(soldierSprite);
@@ -75,6 +78,7 @@ bool GameScene::init()
     soldierSprite->getPhysicsBody()->setContactTestBitmask((int)PhysicsCategory::Boulder);
     addChild(soldierSprite, 2);
 
+    // Touch init, add boulders and event listeners
     initTouch();
     schedule(schedule_selector(GameScene::addBoulder), 5.0f);
 
@@ -127,7 +131,7 @@ void GameScene::addBoulder(float dt)
         this -> addChild(boulder, 1);
 
     }
-    SCORE++;
+    SCORE++; // Score increment
     scoreLabel->setString("SCORE: " + std::to_string(SCORE));
 
 }
